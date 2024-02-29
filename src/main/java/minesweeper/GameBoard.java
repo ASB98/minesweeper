@@ -64,23 +64,31 @@ public class GameBoard {
         return count;
     }
 
-    public void revealCell(int x, int y) {
-        if (x < 0 || x >= width || y < 0 || y >= height || cells[y][x].isRevealed() || cells[y][x].isFlagged()) {
-            return; //out of bounds, already revealed, or flagged cells are ignored
+    public boolean revealCell(int x, int y) {
+        if (x < 0 || x >= width || y < 0 || y >= height) {
+            return false; //out of bounds
+        }
+        Cell cell = cells[y][x];
+        if (cell.isRevealed() || cell.isFlagged()) {
+            return false; //already revealed or flagged
         }
 
-        cells[y][x].setRevealed(true);
+        cell.setRevealed(true);
+        if (cell.isMine()) {
+            return true; //game over
+        }
 
-        if (cells[y][x].getAdjacentMines() == 0 && !cells[y][x].isMine()) {
-            //recursively reveal adjacent cells if this cell has no adjacent mines
+        //if no adjacent mines, recursively reveal adjacent cells
+        if (cell.getAdjacentMines() == 0) {
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
                     if (i != 0 || j != 0) {
-                        revealCell(x + i, y + j);
+                        revealCell(x + i, y + j);//recursion for adjacent cells
                     }
                 }
             }
         }
+        return false; //no mine revealed
     }
 
     public void flagCell(int x, int y) {
@@ -91,23 +99,42 @@ public class GameBoard {
         cells[y][x].setFlagged(!cells[y][x].isFlagged()); //toggle flag
     }
 
-    public void printBoard() {
+    public void printBoard(boolean showMines) {
+        //print column indexes with proper spacing
+        System.out.print("    "); //initial spacing for row labels
+        for (int x = 0; x < width; x++) {
+            System.out.printf("%3d", x + 1);
+        }
+        System.out.println();
+
+        //print top border of the board
+        System.out.print("    "); //align with column indexes
+        for (int x = 0; x < width; x++) {
+            System.out.print("---");
+        }
+        System.out.println();
+
         for (int y = 0; y < height; y++) {
+            //print row index
+            System.out.printf("%3d|", y + 1);
+
             for (int x = 0; x < width; x++) {
                 Cell cell = cells[y][x];
-                if (cell.isRevealed()) {
+                if (showMines && cell.isMine()) {
+                    System.out.print(" * ");
+                } else if (cell.isRevealed()) {
                     if (cell.isMine()) {
-                        System.out.print("* ");
+                        System.out.print(" * ");
                     } else {
-                        System.out.print(cell.getAdjacentMines() + " ");
+                        System.out.printf("%3d", cell.getAdjacentMines());
                     }
                 } else if (cell.isFlagged()) {
-                    System.out.print("F ");
+                    System.out.print(" F ");
                 } else {
-                    System.out.print(". ");
+                    System.out.print(" . ");
                 }
             }
-            System.out.println();
+            System.out.println(); //new line at the end of each row
         }
     }
 }
