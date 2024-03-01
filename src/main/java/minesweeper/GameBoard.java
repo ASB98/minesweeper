@@ -14,8 +14,8 @@ public class GameBoard {
         this.mineCount = mineCount;
         cells = new Cell[height][width];
         initializeBoard();
-        placeMines();
-        calculateAdjacentMines();
+        //placeMines();
+        //calculateAdjacentMines();
     }
 
     private void initializeBoard() {
@@ -38,6 +38,27 @@ public class GameBoard {
             }
         }
     }
+
+    public void placeMinesDynamically(int firstX, int firstY) {
+        Random random = new Random();
+        int placedMines = 0;
+
+        while (placedMines < mineCount) {
+            int x = random.nextInt(width);
+            int y = random.nextInt(height);
+            //check if the randomly chosen cell is not the first clicked cell or its neighbors
+            if (!isNeighborOrSelf(firstX, firstY, x, y) && !cells[y][x].isMine()) {
+                cells[y][x].setMine(true);
+                placedMines++;
+            }
+        }
+        calculateAdjacentMines(); //recalculate mine adjacency after all mines are placed
+    }
+
+    private boolean isNeighborOrSelf(int firstX, int firstY, int x, int y) {
+        return Math.abs(firstX - x) <= 1 && Math.abs(firstY - y) <= 1;
+    }
+
 
     private void calculateAdjacentMines() {
         for (int y = 0; y < height; y++) {
@@ -100,42 +121,42 @@ public class GameBoard {
     }
 
     public void printBoard(boolean showMines) {
-        //print column indexes with proper spacing
-        System.out.print("    "); //initial spacing for row labels
+        // Print column indexes with proper alignment
+        System.out.print("    "); // Adjust starting space based on row label width
         for (int x = 0; x < width; x++) {
-            System.out.printf("%3d", x + 1);
+            System.out.printf("%3d", x + 1); // Use 3 spaces for each column index
         }
-        System.out.println();
-
-        //print top border of the board
-        System.out.print("    "); //align with column indexes
-        for (int x = 0; x < width; x++) {
-            System.out.print("---");
-        }
-        System.out.println();
+        System.out.println("\n   ┌───" + "┬───".repeat(width - 1) + "┐");
 
         for (int y = 0; y < height; y++) {
-            //print row index
-            System.out.printf("%3d|", y + 1);
-
+            // Print row index with enough padding
+            System.out.printf("%2d │", y + 1);
             for (int x = 0; x < width; x++) {
                 Cell cell = cells[y][x];
-                if (showMines && cell.isMine()) {
-                    System.out.print(" * ");
-                } else if (cell.isRevealed()) {
+                if (cell.isRevealed() || (showMines && cell.isMine())) {
                     if (cell.isMine()) {
                         System.out.print(" * ");
                     } else {
-                        System.out.printf("%3d", cell.getAdjacentMines());
+                        System.out.print(cell.getAdjacentMines() > 0 ? " " + cell.getAdjacentMines() + " " : "   ");
                     }
                 } else if (cell.isFlagged()) {
                     System.out.print(" F ");
                 } else {
                     System.out.print(" . ");
                 }
+                if (x < width - 1) {
+                    System.out.print("│");
+                }
             }
-            System.out.println(); //new line at the end of each row
+            System.out.println("│");
+            if (y < height - 1) {
+                System.out.println("   ├───" + "┼───".repeat(width - 1) + "┤");
+            }
         }
+
+        System.out.println("   └───" + "┴───".repeat(width - 1) + "┘");
     }
+
+
 }
 

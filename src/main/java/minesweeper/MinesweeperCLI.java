@@ -5,6 +5,7 @@ import java.util.Scanner;
 public class MinesweeperCLI {
     private static GameBoard board;
     private static boolean gameLost = false;
+    private static boolean isFirstMove = true;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -37,6 +38,7 @@ public class MinesweeperCLI {
 
     private static void gameLoop(Scanner scanner) {
         gameLost = false;
+        isFirstMove = true;
         while (!gameLost) {
             board.printBoard(false); //do not show mines unless game is lost
             System.out.println("Enter command (r x y to reveal, f x y to flag, q to quit): ");
@@ -51,6 +53,10 @@ public class MinesweeperCLI {
                 int y = Integer.parseInt(parts[2]) - 1; //adjust for 1-based indexing
                 switch (parts[0]) {
                     case "r":
+                        if(isFirstMove){
+                            board.placeMinesDynamically(x, y);
+                            isFirstMove = false;
+                        }
                         if(board.revealCell(x, y)) {
                             gameLost = true;
                             board.printBoard(true); //show mines

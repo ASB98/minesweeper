@@ -13,7 +13,7 @@ public class Cell {
         adjacentMines = 0;
     }
 
-    // Getters and setters
+    //get and set methods
     public boolean isMine() {
         return isMine;
     }
