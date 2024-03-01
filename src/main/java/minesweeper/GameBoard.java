@@ -14,7 +14,7 @@ public class GameBoard {
         this.mineCount = mineCount;
         cells = new Cell[height][width];
         initializeBoard();
-        //placeMines();
+        //placeMines(); //removed so there is no instadeath
         //calculateAdjacentMines();
     }
 
@@ -85,55 +85,68 @@ public class GameBoard {
         return count;
     }
 
-    public boolean revealCell(int x, int y) {
+    public boolean openCell(int x, int y) {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             return false; //out of bounds
         }
         Cell cell = cells[y][x];
-        if (cell.isRevealed() || cell.isFlagged()) {
-            return false; //already revealed or flagged
+        if (cell.isOpened() || cell.isFlagged()) {
+            return false; //already opened or flagged
         }
 
-        cell.setRevealed(true);
+        cell.setOpened(true);
         if (cell.isMine()) {
             return true; //game over
         }
 
-        //if no adjacent mines, recursively reveal adjacent cells
+        //if no adjacent mines, recursively open adjacent cells
         if (cell.getAdjacentMines() == 0) {
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
                     if (i != 0 || j != 0) {
-                        revealCell(x + i, y + j);//recursion for adjacent cells
+                        openCell(x + i, y + j);//recursion for adjacent cells
                     }
                 }
             }
         }
-        return false; //no mine revealed
+        return false; //no mine opened
     }
 
     public void flagCell(int x, int y) {
-        if (x < 0 || x >= width || y < 0 || y >= height || cells[y][x].isRevealed()) {
-            return; //out of bounds or already revealed cells are ignored
+        if (x < 0 || x >= width || y < 0 || y >= height || cells[y][x].isOpened()) {
+            return; //out of bounds or already opened cells are ignored
         }
 
         cells[y][x].setFlagged(!cells[y][x].isFlagged()); //toggle flag
     }
 
+    public boolean checkWin() {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                Cell cell = cells[y][x];
+                if (!cell.isMine() && !cell.isOpened()) {
+                    return false; //found a non-mine cell that's not opened yet
+                }
+            }
+        }
+        return true; //all non-mine cells have been opened
+    }
+
+
     public void printBoard(boolean showMines) {
-        // Print column indexes with proper alignment
-        System.out.print("    "); // Adjust starting space based on row label width
+        //print column indexes
+        System.out.print("    "); //adjust starting space based on row label width
         for (int x = 0; x < width; x++) {
-            System.out.printf("%3d", x + 1); // Use 3 spaces for each column index
+            System.out.printf("%3d", x + 1); //use 3 spaces for each column index
         }
         System.out.println("\n   ┌───" + "┬───".repeat(width - 1) + "┐");
 
         for (int y = 0; y < height; y++) {
-            // Print row index with enough padding
+            //print row index with padding
             System.out.printf("%2d │", y + 1);
             for (int x = 0; x < width; x++) {
                 Cell cell = cells[y][x];
-                if (cell.isRevealed() || (showMines && cell.isMine())) {
+                if (cell.isOpened() || (showMines && cell.isMine())) {
                     if (cell.isMine()) {
                         System.out.print(" * ");
                     } else {

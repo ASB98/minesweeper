@@ -13,12 +13,12 @@ public class MinesweeperCLI {
     }
 
     private static void startNewGame(Scanner scanner) {
-        System.out.println("Choose difficulty (1 - Easy, 2 - Medium, 3 - Hard):");
+        System.out.println("Select difficulty (1 - Easy, 2 - Medium, 3 - Hard):");
         int difficulty = scanner.nextInt();
         int width, height, mineCount;
         switch (difficulty) {
             case 1: //easy
-                width = 9; height = 9; mineCount = 10;
+                width = 10; height = 10; mineCount = 10;
                 break;
             case 2: //medium
                 width = 16; height = 16; mineCount = 40;
@@ -36,12 +36,25 @@ public class MinesweeperCLI {
         gameLoop(scanner);
     }
 
+    private static void checkAndHandleWin(Scanner scanner) {
+        if (board.checkWin()) {
+            board.printBoard(true); //show the entire board
+            System.out.println("Congratulations, you've won! Play again? (y/n): ");
+            if (scanner.nextLine().trim().equalsIgnoreCase("y")) {
+                startNewGame(scanner);
+            } else {
+                System.out.println("Thank you for playing!");
+                System.exit(0);
+            }
+        }
+    }
+
     private static void gameLoop(Scanner scanner) {
         gameLost = false;
         isFirstMove = true;
         while (!gameLost) {
             board.printBoard(false); //do not show mines unless game is lost
-            System.out.println("Enter command (r x y to reveal, f x y to flag, q to quit): ");
+            System.out.println("Enter command (o x y to open a cell, f x y to flag a cell, q to quit): ");
             String input = scanner.nextLine();
             if ("q".equals(input)) {
                 break;
@@ -50,26 +63,29 @@ public class MinesweeperCLI {
             String[] parts = input.split(" ");
             if (parts.length == 3) {
                 int x = Integer.parseInt(parts[1]) - 1; //adjust for 1-based indexing
-                int y = Integer.parseInt(parts[2]) - 1; //adjust for 1-based indexing
+                int y = Integer.parseInt(parts[2]) - 1;
                 switch (parts[0]) {
-                    case "r":
-                        if(isFirstMove){
+                    case "o":
+                        if (isFirstMove) {
                             board.placeMinesDynamically(x, y);
                             isFirstMove = false;
                         }
-                        if(board.revealCell(x, y)) {
+                        if (board.openCell(x, y)) {
                             gameLost = true;
                             board.printBoard(true); //show mines
                             System.out.println("Game over! You hit a mine. Try again? (y/n): ");
-                            if(scanner.nextLine().trim().equalsIgnoreCase("y")) {
+                            if (scanner.nextLine().trim().equalsIgnoreCase("y")) {
                                 startNewGame(scanner);
                             } else {
                                 System.exit(0);
                             }
+                        } else {
+                            checkAndHandleWin(scanner);
                         }
                         break;
                     case "f":
                         board.flagCell(x, y);
+                        checkAndHandleWin(scanner);
                         break;
                     default:
                         System.out.println("Invalid command.");
@@ -80,5 +96,6 @@ public class MinesweeperCLI {
             }
         }
     }
+
 }
 

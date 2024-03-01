@@ -2,13 +2,13 @@ package minesweeper;
 
 public class Cell {
     private boolean isMine;
-    private boolean isRevealed;
+    private boolean isOpened;
     private boolean isFlagged;
     private int adjacentMines;
 
     public Cell() {
         isMine = false;
-        isRevealed = false;
+        isOpened = false;
         isFlagged = false;
         adjacentMines = 0;
     }
@@ -22,12 +22,12 @@ public class Cell {
         isMine = mine;
     }
 
-    public boolean isRevealed() {
-        return isRevealed;
+    public boolean isOpened() {
+        return isOpened;
     }
 
-    public void setRevealed(boolean revealed) {
-        isRevealed = revealed;
+    public void setOpened(boolean opened) {
+        isOpened = opened;
     }
 
     public boolean isFlagged() {
