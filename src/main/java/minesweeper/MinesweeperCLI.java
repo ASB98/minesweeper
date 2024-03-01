@@ -6,14 +6,22 @@ public class MinesweeperCLI {
     private static GameBoard board;
     private static boolean gameLost = false;
     private static boolean isFirstMove = true;
+    private static Timer timer;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        System.out.println("\n" +
+                "███╗░░░███╗██╗███╗░░██╗███████╗░██████╗░██╗░░░░░░░██╗███████╗███████╗██████╗░███████╗██████╗░\n" +
+                "████╗░████║██║████╗░██║██╔════╝██╔════╝░██║░░██╗░░██║██╔════╝██╔════╝██╔══██╗██╔════╝██╔══██╗\n" +
+                "██╔████╔██║██║██╔██╗██║█████╗░░╚█████╗░░╚██╗████╗██╔╝█████╗░░█████╗░░██████╔╝█████╗░░██████╔╝\n" +
+                "██║╚██╔╝██║██║██║╚████║██╔══╝░░░╚═══██╗░░████╔═████║░██╔══╝░░██╔══╝░░██╔═══╝░██╔══╝░░██╔══██╗\n" +
+                "██║░╚═╝░██║██║██║░╚███║███████╗██████╔╝░░╚██╔╝░╚██╔╝░███████╗███████╗██║░░░░░███████╗██║░░██║\n" +
+                "╚═╝░░░░░╚═╝╚═╝╚═╝░░╚══╝╚══════╝╚═════╝░░░░╚═╝░░░╚═╝░░╚══════╝╚══════╝╚═╝░░░░░╚══════╝╚═╝░░╚═╝");
         startNewGame(scanner);
     }
 
     private static void startNewGame(Scanner scanner) {
-        System.out.println("Select difficulty (1 - Easy, 2 - Medium, 3 - Hard):");
+        System.out.println("\nSelect difficulty (1 - Easy, 2 - Medium, 3 - Hard):");
         int difficulty = scanner.nextInt();
         int width, height, mineCount;
         switch (difficulty) {
@@ -33,13 +41,17 @@ public class MinesweeperCLI {
         board = new GameBoard(width, height, mineCount);
         scanner.nextLine();
 
+        timer = new Timer(); // Initialize the timer
+        timer.start(); // Start the timer
         gameLoop(scanner);
     }
 
     private static void checkAndHandleWin(Scanner scanner) {
         if (board.checkWin()) {
+            timer.stop();
             board.printBoard(true); //show the entire board
-            System.out.println("Congratulations, you've won! Play again? (y/n): ");
+            long elapsedTimeSeconds = timer.getElapsedTimeSeconds();
+            System.out.println("Congratulations, you've won!" + "\nTime taken: " + elapsedTimeSeconds + " seconds"  + "\nPlay again? (y/n): ");
             if (scanner.nextLine().trim().equalsIgnoreCase("y")) {
                 startNewGame(scanner);
             } else {

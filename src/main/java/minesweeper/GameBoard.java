@@ -150,7 +150,7 @@ public class GameBoard {
                     if (cell.isMine()) {
                         System.out.print(" * ");
                     } else {
-                        System.out.print(cell.getAdjacentMines() > 0 ? " " + cell.getAdjacentMines() + " " : "   ");
+                        System.out.print(cell.getAdjacentMines() > 0 ? " " + cell.getAdjacentMines() + " " : "███");    //alt+219
                     }
                 } else if (cell.isFlagged()) {
                     System.out.print(" F ");
