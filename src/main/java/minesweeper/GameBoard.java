@@ -135,9 +135,9 @@ public class GameBoard {
 
     public void printBoard(boolean showMines) {
         //print column indexes
-        System.out.print("    "); //adjust starting space based on row label width
+        System.out.print("  "); //adjust starting space based on row label width
         for (int x = 0; x < width; x++) {
-            System.out.printf("%3d", x + 1); //use 3 spaces for each column index
+            System.out.printf(" %3d", x + 1); //use 3 spaces for each column index
         }
         System.out.println("\n   ┌───" + "┬───".repeat(width - 1) + "┐");
 
