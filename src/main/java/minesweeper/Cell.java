@@ -4,13 +4,14 @@ public class Cell {
     private boolean isMine;
     private boolean isOpened;
     private boolean isFlagged;
-    private int adjacentMines;
+    private int neighbourMines;
 
+    //constructor
     public Cell() {
         isMine = false;
         isOpened = false;
         isFlagged = false;
-        adjacentMines = 0;
+        neighbourMines = 0;
     }
 
     //get and set methods
@@ -38,11 +39,11 @@ public class Cell {
         isFlagged = flagged;
     }
 
-    public int getAdjacentMines() {
-        return adjacentMines;
+    public int getNeighbourMines() {
+        return neighbourMines;
     }
 
-    public void setAdjacentMines(int adjacentMines) {
-        this.adjacentMines = adjacentMines;
+    public void setNeighbourMines(int neighbourMines) {
+        this.neighbourMines = neighbourMines;
     }
 }

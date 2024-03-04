@@ -3,7 +3,9 @@ package minesweeper;
 import java.util.Scanner;
 import java.util.InputMismatchException;
 
-//Weird bugs on upper and lower mine density limits
+//Weird bugs if user chooses upper or lower mine density limits on some board sizes - need to be more restrictive on choice
+//I should probably limit the number of available flags to stop the possibility of cheating
+//Should also show incorrect flags as actual minesweeper does if you lose
 
 public class MinesweeperCLI {
     private static GameBoard board;
@@ -60,6 +62,7 @@ public class MinesweeperCLI {
                     startNewGame(scanner); //call startNewGame to prompt for difficulty again.
                     return;
             }
+            //should catch type mismatch
         } catch (InputMismatchException e) {
             System.out.println("Invalid input. Please enter numeric values.");
             scanner.nextLine();
@@ -88,6 +91,7 @@ public class MinesweeperCLI {
         return input;
     }
 
+    //float input validation within specific range
     private static float validFloatInput(Scanner scanner, float min, float max) {
         float input;
         do {
@@ -103,8 +107,7 @@ public class MinesweeperCLI {
         return input;
     }
 
-
-
+    //handler for win condition
     private static void checkAndHandleWin(Scanner scanner) {
         if (board.checkWin()) {
             timer.stop(); //stop timer
@@ -131,6 +134,7 @@ public class MinesweeperCLI {
                 break;
             }
 
+            //split into array of substrings on " " character
             String[] parts = input.split(" ");
             if (parts.length == 3) {
                 int x = Integer.parseInt(parts[1]) - 1; //adjust for 1-based indexing
@@ -138,13 +142,18 @@ public class MinesweeperCLI {
                 switch (parts[0]) {
                     case "o":
                         if (isFirstMove) {
+                            //only place mines after first move
                             board.placeMinesDynamically(x, y);
                             isFirstMove = false;
                         }
+
+                        //if true then mine has been opened - game over
                         if (board.openCell(x, y)) {
+                            timer.stop();
+                            long elapsedTimeSeconds = timer.getElapsedTimeSeconds();
                             gameLost = true;
                             board.printBoard(true); //show mines
-                            System.out.println("Game over! You hit a mine. Try again? (y/n): ");
+                            System.out.println("Game over! You hit a mine after " + elapsedTimeSeconds + " seconds. Try again? (y/n): ");
                             if (scanner.nextLine().trim().equalsIgnoreCase("y")) {
                                 startNewGame(scanner);
                             } else {

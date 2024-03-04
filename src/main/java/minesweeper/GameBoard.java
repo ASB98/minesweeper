@@ -3,22 +3,25 @@ package minesweeper;
 import java.util.Random;
 
 public class GameBoard {
+    //2D array to store cells
+    //Only dealing with arrays as everything is a fixed size
     private Cell[][] cells;
     private int width;
     private int height;
     private int mineCount;
 
+    //constructor to initialise GB with data members
     public GameBoard(int width, int height, int mineCount) {
         this.width = width;
         this.height = height;
         this.mineCount = mineCount;
-        cells = new Cell[height][width];
+        cells = new Cell[height][width]; //initialise cell array with given height and width
         initializeBoard();
         //placeMines(); //removed so there is no instadeath
-        //calculateAdjacentMines();
+        //calculateNeighbourMines();
     }
 
-    //initialise cells as empty
+    //loop through board and place empty cells in each position
     private void initializeBoard() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -27,7 +30,8 @@ public class GameBoard {
         }
     }
 
-    private void placeMines() { //deprecated due to instadeath
+    //deprecated due to instadeath
+    private void placeMines() {
         Random random = new Random();
         int placedMines = 0;
         while (placedMines < mineCount) {
@@ -40,76 +44,95 @@ public class GameBoard {
         }
     }
 
+    //method to place mines after first move to prevent instadeath
     public void placeMinesDynamically(int firstX, int firstY) {
         Random random = new Random();
         int placedMines = 0;
 
+        //mineCount set by user depending on difficulty, place randomly while count not met but only in valid cells
         while (placedMines < mineCount) {
-            int x = random.nextInt(width);
-            int y = random.nextInt(height);
-            //check if the randomly chosen cell is not the first clicked cell or its neighbors
-            if (!isNeighborOrSelf(firstX, firstY, x, y) && !cells[y][x].isMine()) {
-                cells[y][x].setMine(true);
-                placedMines++;
+            int x = random.nextInt(width); //random x coordinate for mine placement
+            int y = random.nextInt(height); //random y coordinate for mine placement
+
+            //check if the randomly chosen cell is not the first clicked cell or its neighbours
+            //if not first cell or immediately neighbour to first or already mined, then place mine
+            if (!isNeighbourOrSelf(firstX, firstY, x, y) && !cells[y][x].isMine()) {
+                cells[y][x].setMine(true); //set mine at valid cell
+                placedMines++; //increment number of mines successfully placed
             }
         }
-        calculateAdjacentMines(); //recalculate mine adjacency after all mines are placed
+        calculateNeighbourMines(); //calculate mine adjacency after all mines are placed
     }
 
     //determine if cell is first one clicked or if it is neighbour
-    private boolean isNeighborOrSelf(int firstX, int firstY, int x, int y) {
-        return Math.abs(firstX - x) <= 1 && Math.abs(firstY - y) <= 1;
+    private boolean isNeighbourOrSelf(int firstX, int firstY, int x, int y) {
+        return Math.abs(firstX - x) <= 1 && Math.abs(firstY - y) <= 1; //return true if neighbour or self
     }
 
-    //updates each cell's adjacent mine count after mines have been placed
-    private void calculateAdjacentMines() {
+    //updates each cell's neighbour mine count after mines have been placed
+    private void calculateNeighbourMines() {
+        //loop through board and check if not mine, count mines and mark adjacency count
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (!cells[y][x].isMine()) {
-                    int mines = countAdjacentMines(x, y);
-                    cells[y][x].setAdjacentMines(mines);
+                    int mines = countNeighbourMines(x, y); //count neighbour mines for each cell
+                    cells[y][x].setNeighbourMines(mines); //set  neighbour mine count for cell
                 }
             }
         }
     }
 
-    //count number of mines adjacent to a given cell
-    private int countAdjacentMines(int x, int y) {
+    //count number of mines neighbour to a given cell
+    private int countNeighbourMines(int x, int y) {
         int count = 0;
+        //loop through neighbour mines, all 8 directions around mine
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
-                int nx = x + i;
-                int ny = y + j;
+                int number_x = x + i;
+                int number_y = y + j;
                 //check bounds and if the neighbouring cell is a mine
-                if (nx >= 0 && nx < width && ny >= 0 && ny < height && cells[ny][nx].isMine()) {
-                    count++;
+                if (number_x >= 0 && number_x < width && number_y >= 0 && number_y < height && cells[number_y][number_x].isMine()) {
+                    count++; //increment count if neighbouring cell is a mine
                 }
             }
         }
         return count;
     }
 
-    //opens a cell at the specified coordinates, returning true if it's a mine - game over
+    //opens a cell at the specified coordinates, returning true if it's a mine -> game over
     public boolean openCell(int x, int y) {
-        if (x < 0 || x >= width || y < 0 || y >= height) { //check if coordinates are in bounds
-            return false; //out of bounds
+        //check if coordinates are in bounds
+        if (x < 0 || x >= width || y < 0 || y >= height) {
+            return false; //out of bounds, do nothing
         }
+
+        //retrieve cell object from 2D array
         Cell cell = cells[y][x];
+
+        //if already opened or flagged, do nothing and just return
         if (cell.isOpened() || cell.isFlagged()) {
-            return false; //already opened or flagged
+            return false;
         }
 
+        //if previous checks pass then set cell as open
         cell.setOpened(true);
+
+        //game over if cell is a mine
         if (cell.isMine()) {
-            return true; //game over if cell is mine
+            return true;
         }
 
-        //if no adjacent mines, recursively open adjacent cells
-        if (cell.getAdjacentMines() == 0) {
+        //if no neighbour mines, recursively open neighbour cells
+        //recursion continues until cells with neighbour mines are found
+        if (cell.getNeighbourMines() == 0) {
+            //iterate over neighbour rows relative to current cell
             for (int i = -1; i <= 1; i++) {
+                //iterate over neighbour columns relative to current cell
                 for (int j = -1; j <= 1; j++) {
+                    //do not consider current cell for opening
                     if (i != 0 || j != 0) {
-                        openCell(x + i, y + j);//recursion for adjacent cells
+                        //recursion for neighbour cells
+                        openCell(x + i, y + j);
                     }
                 }
             }
@@ -130,9 +153,12 @@ public class GameBoard {
     public boolean checkWin() {
         int correctlyFlaggedMines = 0;
         int totalOpenedCells = 0;
+
+        //looping through all cells
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 Cell cell = cells[y][x];
+
                 //check if a mine cell is correctly flagged
                 if (cell.isMine() && cell.isFlagged()) {
                     correctlyFlaggedMines++;
@@ -153,27 +179,27 @@ public class GameBoard {
 
     //print current board state to console
     public void printBoard(boolean showMines) {
-        System.out.print("  "); // Adjust starting space based on row label width
+        System.out.print("  "); //adjust starting space based on row label width
         for (int x = 0; x < width; x++) {
-            System.out.printf(" %3d", x + 1); // Use 3 spaces for each column index
+            System.out.printf(" %3d", x + 1); //use 3 spaces for each column index to account for double digits
         }
         System.out.println("\n   ┌───" + "┬───".repeat(width - 1) + "┐");
 
         for (int y = 0; y < height; y++) {
-            // Print row index with padding
+            //print row index with padding
             System.out.printf("%2d │", y + 1);
             for (int x = 0; x < width; x++) {
                 Cell cell = cells[y][x];
                 if (cell.isOpened() || (showMines && cell.isMine())) {
                     if (cell.isMine()) {
-                        System.out.print("\u001B[41m" + "   " + "\u001B[0m");
+                        System.out.print("\u001B[41m" + " * " + "\u001B[0m");//reveal mine with red background
                     } else {
-                        System.out.print(getColoredNumber(cell.getAdjacentMines()));
+                        System.out.print(getColoredNumber(cell.getNeighbourMines()));//print neighbour mine count with colours
                     }
                 } else if (cell.isFlagged()) {
-                    System.out.print(" F ");
+                    System.out.print(" F ");//print flagged cell
                 } else {
-                    System.out.print(" . ");
+                    System.out.print(" . ");//print unopened cell
                 }
                 if (x < width - 1) {
                     System.out.print("│");
@@ -188,20 +214,25 @@ public class GameBoard {
         System.out.println("   └───" + "┴───".repeat(width - 1) + "┘");
     }
 
-    //conditional formatting of adjacent mine numbers
+    //method for conditional formatting of neighbour mine numbers with ansi colour formatting
     //ENHANCED SWITCH, thanks for the recommendation intellij
-    private String getColoredNumber(int adjacentMines) {
-        String colorCode = switch (adjacentMines) {
-            case 1 -> "\u001B[34m";//blue
-            case 2 -> "\u001B[32m";//green
-            case 3 -> "\u001B[31m";//red
-            case 4 -> "\u001B[35m";//purple
-            case 5 -> "\u001B[33m";//yellow
-            default -> "\u001B[0m";//default color
+    private String getColoredNumber(int neighbourMines) {
+        String colorCode = switch (neighbourMines) {
+            //switch cases are number of neighbouring mines
+            case 1 -> "\u001B[34m"; //blue
+            case 2 -> "\u001B[32m"; //green
+            case 3 -> "\u001B[31m"; //red
+            case 4 -> "\u001B[35m"; //purple
+            case 5 -> "\u001B[33m"; //yellow
+            default -> "\u001B[0m"; //default color - white
         };
-        return colorCode + (adjacentMines > 0 ? " " + adjacentMines + " " : "\u001B[47m" + "   " + "\u001B[0m") + "\u001B[0m";
+        return colorCode + (neighbourMines > 0 ? " " + neighbourMines + " " : "\u001B[47m" + "   " + "\u001B[0m") + "\u001B[0m"; //if no neighbour mines blank cell
     }
 
+    //method to get cells, only used for testing
+    public Cell[][] getCells() {
+        return cells;
+    }
 
 
 }
