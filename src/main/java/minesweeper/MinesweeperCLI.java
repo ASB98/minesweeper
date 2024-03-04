@@ -3,6 +3,7 @@ package minesweeper;
 import java.util.Scanner;
 import java.util.InputMismatchException;
 
+//Weird bugs on upper and lower mine density limits
 
 public class MinesweeperCLI {
     private static GameBoard board;
@@ -39,13 +40,13 @@ public class MinesweeperCLI {
                     board = new GameBoard(30, 16, 99);
                     break;
                 case 4: //custom
-                    System.out.println("Enter custom width and height (min 5x5, max 99x99):");
-                    int width = validIntInput(scanner, 5, 99);
-                    int height = validIntInput(scanner, 5, 99);
+                    System.out.println("Enter custom width and height (min 5x5, max 50x50):");
+                    int width = validIntInput(scanner, 5, 50);
+                    int height = validIntInput(scanner, 5, 50);
 
-                    // Calculate and display valid density range
-                    float minDensity = 100.0f / (width * height); // Minimum density for at least one mine
-                    float maxDensity = 100.0f * (width * height - 1) / (width * height); // Maximum density for at least one non-mine
+                    //calculate and display valid density range
+                    float minDensity = 100.0f / (width * height); //minimum density for at least one mine
+                    float maxDensity = 100.0f * (width * height - 1) / (width * height); //maximum density for at least one non-mine
                     System.out.printf("Enter mine density percentage (valid range: %.2f%% to %.2f%%):%n", minDensity, maxDensity);
 
                     float mineDensity = validFloatInput(scanner, minDensity, maxDensity);
@@ -56,7 +57,7 @@ public class MinesweeperCLI {
                     //invalid input handling. Prompts for difficulty selection again.
                     System.out.println("Invalid difficulty. Please enter a number between 1 and 4.");
                     scanner.nextLine();
-                    startNewGame(scanner); //recursively call startNewGame to prompt for difficulty again.
+                    startNewGame(scanner); //call startNewGame to prompt for difficulty again.
                     return;
             }
         } catch (InputMismatchException e) {
@@ -66,12 +67,12 @@ public class MinesweeperCLI {
             return;
         }
         scanner.nextLine();
-        timer = new Timer();
-        timer.start();
+        timer = new Timer();//initialise timer
+        timer.start();//start timer
         gameLoop(scanner);
     }
 
-
+    //integer validation within specified range
     private static int validIntInput(Scanner scanner, int min, int max) {
         int input;
         do {
