@@ -5,10 +5,10 @@ import java.util.Random;
 public class GameBoard {
     //2D array to store cells
     //Only dealing with arrays as everything is a fixed size
-    final private Cell[][] cells;
-    final private int width;
-    final private int height;
-    final private int mineCount;
+    private final Cell[][] cells;
+    private final int width;
+    private final int height;
+    private final int mineCount;
 <span class="fc" id="L12">    final private Random random = new Random();</span>
 
     //constructor to initialise GB with data members
@@ -29,196 +29,195 @@ public class GameBoard {
         }
 <span class="fc" id="L30">    }</span>
 
-
     //method to place mines after first move to prevent instadeath
     public void placeMinesDynamically(int firstX, int firstY) {
 
-<span class="fc" id="L36">        int placedMines = 0;</span>
+<span class="fc" id="L35">        int placedMines = 0;</span>
 
         //mineCount set by user depending on difficulty, place randomly while count not met but only in valid cells
-<span class="fc bfc" id="L39" title="All 2 branches covered.">        while (placedMines &lt; mineCount) {</span>
-<span class="fc" id="L40">            int x = random.nextInt(width); //random x coordinate for mine placement</span>
-<span class="fc" id="L41">            int y = random.nextInt(height); //random y coordinate for mine placement</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        while (placedMines &lt; mineCount) {</span>
+<span class="fc" id="L39">            int x = random.nextInt(width); //random x coordinate for mine placement</span>
+<span class="fc" id="L40">            int y = random.nextInt(height); //random y coordinate for mine placement</span>
 
             //check if the randomly chosen cell is not the first clicked cell or its neighbours
             //if not first cell or immediately neighbour to first or already mined, then place mine
-<span class="pc bpc" id="L45" title="2 of 4 branches missed.">            if (!isNeighbourOrSelf(firstX, firstY, x, y) &amp;&amp; !cells[y][x].isMine()) {</span>
-<span class="fc" id="L46">                cells[y][x].setMine(true); //set mine at valid cell</span>
-<span class="fc" id="L47">                placedMines++; //increment number of mines successfully placed</span>
+<span class="pc bpc" id="L44" title="2 of 4 branches missed.">            if (!isNeighbourOrSelf(firstX, firstY, x, y) &amp;&amp; !cells[y][x].isMine()) {</span>
+<span class="fc" id="L45">                cells[y][x].setMine(true); //set mine at valid cell</span>
+<span class="fc" id="L46">                placedMines++; //increment number of mines successfully placed</span>
             }
-<span class="fc" id="L49">        }</span>
-<span class="fc" id="L50">        calculateNeighbourMines(); //calculate mine adjacency after all mines are placed</span>
-<span class="fc" id="L51">    }</span>
+<span class="fc" id="L48">        }</span>
+<span class="fc" id="L49">        calculateNeighbourMines(); //calculate mine adjacency after all mines are placed</span>
+<span class="fc" id="L50">    }</span>
 
     //determine if cell is first one clicked or if it is neighbour
     private boolean isNeighbourOrSelf(int firstX, int firstY, int x, int y) {
-<span class="pc bpc" id="L55" title="3 of 4 branches missed.">        return Math.abs(firstX - x) &lt;= 1 &amp;&amp; Math.abs(firstY - y) &lt;= 1; //return true if neighbour or self</span>
+<span class="pc bpc" id="L54" title="2 of 4 branches missed.">        return Math.abs(firstX - x) &lt;= 1 &amp;&amp; Math.abs(firstY - y) &lt;= 1; //return true if neighbour or self</span>
     }
 
     //updates each cell's neighbour mine count after mines have been placed
     private void calculateNeighbourMines() {
         //loop through board and check if not mine, count mines and mark adjacency count
-<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (int y = 0; y &lt; height; y++) {</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">            for (int x = 0; x &lt; width; x++) {</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">                if (!cells[y][x].isMine()) {</span>
-<span class="fc" id="L64">                    int mines = countNeighbourMines(x, y); //count neighbour mines for each cell</span>
-<span class="fc" id="L65">                    cells[y][x].setNeighbourMines(mines); //set  neighbour mine count for cell</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        for (int y = 0; y &lt; height; y++) {</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">            for (int x = 0; x &lt; width; x++) {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">                if (!cells[y][x].isMine()) {</span>
+<span class="fc" id="L63">                    int mines = countNeighbourMines(x, y); //count neighbour mines for each cell</span>
+<span class="fc" id="L64">                    cells[y][x].setNeighbourMines(mines); //set  neighbour mine count for cell</span>
                 }
             }
         }
-<span class="fc" id="L69">    }</span>
+<span class="fc" id="L68">    }</span>
 
     //count number of mines neighbour to a given cell
     private int countNeighbourMines(int x, int y) {
-<span class="fc" id="L73">        int count = 0;</span>
+<span class="fc" id="L72">        int count = 0;</span>
         //loop through neighbour mines, all 8 directions around mine
-<span class="fc bfc" id="L75" title="All 2 branches covered.">        for (int i = -1; i &lt;= 1; i++) {</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">            for (int j = -1; j &lt;= 1; j++) {</span>
-<span class="fc" id="L77">                int numX = x + i;</span>
-<span class="fc" id="L78">                int numY = y + j;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        for (int i = -1; i &lt;= 1; i++) {</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">            for (int j = -1; j &lt;= 1; j++) {</span>
+<span class="fc" id="L76">                int numX = x + i;</span>
+<span class="fc" id="L77">                int numY = y + j;</span>
                 //check bounds and if the neighbouring cell is a mine
-<span class="fc bfc" id="L80" title="All 10 branches covered.">                if (numX &gt;= 0 &amp;&amp; numX &lt; width &amp;&amp; numY &gt;= 0 &amp;&amp; numY &lt; height &amp;&amp; cells[numY][numX].isMine()) {</span>
-<span class="fc" id="L81">                    count++; //increment count if neighbouring cell is a mine</span>
+<span class="fc bfc" id="L79" title="All 10 branches covered.">                if (numX &gt;= 0 &amp;&amp; numX &lt; width &amp;&amp; numY &gt;= 0 &amp;&amp; numY &lt; height &amp;&amp; cells[numY][numX].isMine()) {</span>
+<span class="fc" id="L80">                    count++; //increment count if neighbouring cell is a mine</span>
                 }
             }
         }
-<span class="fc" id="L85">        return count;</span>
+<span class="fc" id="L84">        return count;</span>
     }
 
     //opens a cell at the specified coordinates, returning true if it's a mine -&gt; game over
     public boolean openCell(int x, int y) {
         //check if coordinates are in bounds
-<span class="fc bfc" id="L91" title="All 8 branches covered.">        if (x &lt; 0 || x &gt;= width || y &lt; 0 || y &gt;= height) {</span>
-<span class="fc" id="L92">            return false; //out of bounds, do nothing</span>
+<span class="fc bfc" id="L90" title="All 8 branches covered.">        if (x &lt; 0 || x &gt;= width || y &lt; 0 || y &gt;= height) {</span>
+<span class="fc" id="L91">            return false; //out of bounds, do nothing</span>
         }
 
         //retrieve cell object from 2D array
-<span class="fc" id="L96">        Cell cell = cells[y][x];</span>
+<span class="fc" id="L95">        Cell cell = cells[y][x];</span>
 
         //if already opened or flagged, do nothing and just return
-<span class="pc bpc" id="L99" title="1 of 4 branches missed.">        if (cell.isOpened() || cell.isFlagged()) {</span>
-<span class="fc" id="L100">            return false;</span>
+<span class="pc bpc" id="L98" title="1 of 4 branches missed.">        if (cell.isOpened() || cell.isFlagged()) {</span>
+<span class="fc" id="L99">            return false;</span>
         }
 
         //if previous checks pass then set cell as open
-<span class="fc" id="L104">        cell.setOpened(true);</span>
+<span class="fc" id="L103">        cell.setOpened(true);</span>
 
         //game over if cell is a mine
-<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (cell.isMine()) {</span>
-<span class="fc" id="L108">            return true;</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (cell.isMine()) {</span>
+<span class="fc" id="L107">            return true;</span>
         }
 
         //if no neighbour mines, recursively open neighbour cells
         //recursion continues until cells with neighbour mines are found
-<span class="pc bpc" id="L113" title="1 of 2 branches missed.">        if (cell.getNeighbourMines() == 0) {</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if (cell.getNeighbourMines() == 0) {</span>
             //iterate over neighbour rows relative to current cell
-<span class="fc bfc" id="L115" title="All 2 branches covered.">            for (int i = -1; i &lt;= 1; i++) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            for (int i = -1; i &lt;= 1; i++) {</span>
                 //iterate over neighbour columns relative to current cell
-<span class="fc bfc" id="L117" title="All 2 branches covered.">                for (int j = -1; j &lt;= 1; j++) {</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">                for (int j = -1; j &lt;= 1; j++) {</span>
                     //do not consider current cell for opening
-<span class="fc bfc" id="L119" title="All 4 branches covered.">                    if (i != 0 || j != 0) {</span>
+<span class="fc bfc" id="L118" title="All 4 branches covered.">                    if (i != 0 || j != 0) {</span>
                         //recursion for neighbour cells
-<span class="fc" id="L121">                        openCell(x + i, y + j);</span>
+<span class="fc" id="L120">                        openCell(x + i, y + j);</span>
                     }
                 }
             }
         }
-<span class="fc" id="L126">        return false; //no mine opened</span>
+<span class="fc" id="L125">        return false; //no mine opened</span>
     }
 
     //toggle flag status of a cell
     public void flagCell(int x, int y) {
-<span class="pc bpc" id="L131" title="5 of 10 branches missed.">        if (x &lt; 0 || x &gt;= width || y &lt; 0 || y &gt;= height || cells[y][x].isOpened()) {</span>
-<span class="nc" id="L132">            return; //out of bounds or already opened cells are ignored</span>
+<span class="pc bpc" id="L130" title="5 of 10 branches missed.">        if (x &lt; 0 || x &gt;= width || y &lt; 0 || y &gt;= height || cells[y][x].isOpened()) {</span>
+<span class="nc" id="L131">            return; //out of bounds or already opened cells are ignored</span>
         }
 
-<span class="fc bfc" id="L135" title="All 2 branches covered.">        cells[y][x].setFlagged(!cells[y][x].isFlagged()); //toggle flag</span>
-<span class="fc" id="L136">    }</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">        cells[y][x].setFlagged(!cells[y][x].isFlagged()); //toggle flag</span>
+<span class="fc" id="L135">    }</span>
 
     //check if all non-mine cells have been opened
     public boolean checkWin() {
-<span class="fc" id="L140">        int correctlyFlaggedMines = 0;</span>
-<span class="fc" id="L141">        int totalOpenedCells = 0;</span>
+<span class="fc" id="L139">        int correctlyFlaggedMines = 0;</span>
+<span class="fc" id="L140">        int totalOpenedCells = 0;</span>
 
         //looping through all cells
-<span class="fc bfc" id="L144" title="All 2 branches covered.">        for (int y = 0; y &lt; height; y++) {</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">            for (int x = 0; x &lt; width; x++) {</span>
-<span class="fc" id="L146">                Cell cell = cells[y][x];</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        for (int y = 0; y &lt; height; y++) {</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            for (int x = 0; x &lt; width; x++) {</span>
+<span class="fc" id="L145">                Cell cell = cells[y][x];</span>
 
                 //check if a mine cell is correctly flagged
-<span class="pc bpc" id="L149" title="1 of 4 branches missed.">                if (cell.isMine() &amp;&amp; cell.isFlagged()) {</span>
-<span class="fc" id="L150">                    correctlyFlaggedMines++;</span>
+<span class="pc bpc" id="L148" title="1 of 4 branches missed.">                if (cell.isMine() &amp;&amp; cell.isFlagged()) {</span>
+<span class="fc" id="L149">                    correctlyFlaggedMines++;</span>
                 }
                 //count opened cells
-<span class="pc bpc" id="L153" title="1 of 2 branches missed.">                if (cell.isOpened()) {</span>
-<span class="nc" id="L154">                    totalOpenedCells++;</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">                if (cell.isOpened()) {</span>
+<span class="nc" id="L153">                    totalOpenedCells++;</span>
                 }
             }
         }
 
         //win conditions: all mines are correctly flagged or all non-mine cells are opened
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">        boolean allMinesCorrectlyFlagged = correctlyFlaggedMines == mineCount;</span>
-<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        boolean allNonMineCellsOpened = totalOpenedCells == (width * height - mineCount);</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">        boolean allMinesCorrectlyFlagged = correctlyFlaggedMines == mineCount;</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">        boolean allNonMineCellsOpened = totalOpenedCells == (width * height - mineCount);</span>
 
-<span class="pc bpc" id="L163" title="3 of 4 branches missed.">        return allMinesCorrectlyFlagged || allNonMineCellsOpened;</span>
+<span class="pc bpc" id="L162" title="3 of 4 branches missed.">        return allMinesCorrectlyFlagged || allNonMineCellsOpened;</span>
     }
 
     //print current board state to console
     public void printBoard(boolean showMines) {
-<span class="nc" id="L168">        System.out.print(&quot;  &quot;); //adjust starting space based on row label width</span>
-<span class="nc bnc" id="L169" title="All 2 branches missed.">        for (int x = 0; x &lt; width; x++) {</span>
-<span class="nc" id="L170">            System.out.printf(&quot; %3d&quot;, x + 1); //use 3 spaces for each column index to account for double digits</span>
+<span class="nc" id="L167">        System.out.print(&quot;  &quot;); //adjust starting space based on row label width</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">        for (int x = 0; x &lt; width; x++) {</span>
+<span class="nc" id="L169">            System.out.printf(&quot; %3d&quot;, x + 1); //use 3 spaces for each column index to account for double digits</span>
         }
-<span class="nc" id="L172">        System.out.println(&quot;\n   ┌───&quot; + &quot;┬───&quot;.repeat(width - 1) + &quot;┐&quot;);</span>
+<span class="nc" id="L171">        System.out.println(&quot;\n   ┌───&quot; + &quot;┬───&quot;.repeat(width - 1) + &quot;┐&quot;);</span>
 
-<span class="nc bnc" id="L174" title="All 2 branches missed.">        for (int y = 0; y &lt; height; y++) {</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">        for (int y = 0; y &lt; height; y++) {</span>
             //print row index with padding
-<span class="nc" id="L176">            System.out.printf(&quot;%2d │&quot;, y + 1);</span>
-<span class="nc bnc" id="L177" title="All 2 branches missed.">            for (int x = 0; x &lt; width; x++) {</span>
-<span class="nc" id="L178">                Cell cell = cells[y][x];</span>
-<span class="nc bnc" id="L179" title="All 6 branches missed.">                if (cell.isOpened() || (showMines &amp;&amp; cell.isMine())) {</span>
-<span class="nc bnc" id="L180" title="All 2 branches missed.">                    if (cell.isMine()) {</span>
-<span class="nc" id="L181">                        System.out.print(&quot;\u001B[41m&quot; + &quot; * &quot; + &quot;\u001B[0m&quot;);//reveal mine with red background</span>
+<span class="nc" id="L175">            System.out.printf(&quot;%2d │&quot;, y + 1);</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">            for (int x = 0; x &lt; width; x++) {</span>
+<span class="nc" id="L177">                Cell cell = cells[y][x];</span>
+<span class="nc bnc" id="L178" title="All 6 branches missed.">                if (cell.isOpened() || (showMines &amp;&amp; cell.isMine())) {</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">                    if (cell.isMine()) {</span>
+<span class="nc" id="L180">                        System.out.print(&quot;\u001B[41m&quot; + &quot; * &quot; + &quot;\u001B[0m&quot;);//reveal mine with red background</span>
                     } else {
-<span class="nc" id="L183">                        System.out.print(getColoredNumber(cell.getNeighbourMines()));//print neighbour mine count with colours</span>
+<span class="nc" id="L182">                        System.out.print(getColoredNumber(cell.getNeighbourMines()));//print neighbour mine count with colours</span>
                     }
-<span class="nc bnc" id="L185" title="All 2 branches missed.">                } else if (cell.isFlagged()) {</span>
-<span class="nc" id="L186">                    System.out.print(&quot; F &quot;);//print flagged cell</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                } else if (cell.isFlagged()) {</span>
+<span class="nc" id="L185">                    System.out.print(&quot; F &quot;);//print flagged cell</span>
                 } else {
-<span class="nc" id="L188">                    System.out.print(&quot; . &quot;);//print unopened cell</span>
+<span class="nc" id="L187">                    System.out.print(&quot; . &quot;);//print unopened cell</span>
                 }
-<span class="nc bnc" id="L190" title="All 2 branches missed.">                if (x &lt; width - 1) {</span>
-<span class="nc" id="L191">                    System.out.print(&quot;│&quot;);</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">                if (x &lt; width - 1) {</span>
+<span class="nc" id="L190">                    System.out.print(&quot;│&quot;);</span>
                 }
             }
-<span class="nc" id="L194">            System.out.println(&quot;│&quot;);</span>
-<span class="nc bnc" id="L195" title="All 2 branches missed.">            if (y &lt; height - 1) {</span>
-<span class="nc" id="L196">                System.out.println(&quot;   ├───&quot; + &quot;┼───&quot;.repeat(width - 1) + &quot;┤&quot;);</span>
+<span class="nc" id="L193">            System.out.println(&quot;│&quot;);</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">            if (y &lt; height - 1) {</span>
+<span class="nc" id="L195">                System.out.println(&quot;   ├───&quot; + &quot;┼───&quot;.repeat(width - 1) + &quot;┤&quot;);</span>
             }
         }
 
-<span class="nc" id="L200">        System.out.println(&quot;   └───&quot; + &quot;┴───&quot;.repeat(width - 1) + &quot;┘&quot;);</span>
-<span class="nc" id="L201">    }</span>
+<span class="nc" id="L199">        System.out.println(&quot;   └───&quot; + &quot;┴───&quot;.repeat(width - 1) + &quot;┘&quot;);</span>
+<span class="nc" id="L200">    }</span>
 
     //method for conditional formatting of neighbour mine numbers with ansi colour formatting
     //ENHANCED SWITCH, thanks for the recommendation intellij
     private String getColoredNumber(int neighbourMines) {
-<span class="nc" id="L206">        String defaultColour = &quot;\u001B[0m&quot;;</span>
-<span class="nc bnc" id="L207" title="All 6 branches missed.">        String colorCode = switch (neighbourMines) {</span>
+<span class="nc" id="L205">        String defaultColour = &quot;\u001B[0m&quot;;</span>
+<span class="nc bnc" id="L206" title="All 6 branches missed.">        String colorCode = switch (neighbourMines) {</span>
             //switch cases are number of neighbouring mines
-<span class="nc" id="L209">            case 1 -&gt; &quot;\u001B[34m&quot;; //blue</span>
-<span class="nc" id="L210">            case 2 -&gt; &quot;\u001B[32m&quot;; //green</span>
-<span class="nc" id="L211">            case 3 -&gt; &quot;\u001B[31m&quot;; //red</span>
-<span class="nc" id="L212">            case 4 -&gt; &quot;\u001B[35m&quot;; //purple</span>
-<span class="nc" id="L213">            case 5 -&gt; &quot;\u001B[33m&quot;; //yellow</span>
-<span class="nc" id="L214">            default -&gt; defaultColour; //default color - white</span>
+<span class="nc" id="L208">            case 1 -&gt; &quot;\u001B[34m&quot;; //blue</span>
+<span class="nc" id="L209">            case 2 -&gt; &quot;\u001B[32m&quot;; //green</span>
+<span class="nc" id="L210">            case 3 -&gt; &quot;\u001B[31m&quot;; //red</span>
+<span class="nc" id="L211">            case 4 -&gt; &quot;\u001B[35m&quot;; //purple</span>
+<span class="nc" id="L212">            case 5 -&gt; &quot;\u001B[33m&quot;; //yellow</span>
+<span class="nc" id="L213">            default -&gt; defaultColour; //default color - white</span>
         };
-<span class="nc bnc" id="L216" title="All 2 branches missed.">        return colorCode + (neighbourMines &gt; 0 ? &quot; &quot; + neighbourMines + &quot; &quot; : &quot;\u001B[47m&quot; + &quot;   &quot; + defaultColour) + defaultColour; //if no neighbour mines blank cell</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">        return colorCode + (neighbourMines &gt; 0 ? &quot; &quot; + neighbourMines + &quot; &quot; : &quot;\u001B[47m&quot; + &quot;   &quot; + defaultColour) + defaultColour; //if no neighbour mines blank cell</span>
     }
 
     //method to get cells, only used for testing
     public Cell[][] getCells() {
-<span class="fc" id="L221">        return cells;</span>
+<span class="fc" id="L220">        return cells;</span>
     }
 
 
