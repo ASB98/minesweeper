@@ -1,5 +1,8 @@
 import minesweeper.Timer;
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TimerTest {
@@ -8,7 +11,7 @@ class TimerTest {
     void testElapsedTime() throws InterruptedException {
         Timer timer = new Timer();
         timer.start();
-        Thread.sleep(1000); // Sleep for 1 second - given in milliseconds
+        TimeUnit.SECONDS.sleep(1);
         timer.stop();
         assertEquals(1, timer.getElapsedTimeSeconds());
     }

@@ -9,7 +9,7 @@ public class GameBoard {
     private final int width;
     private final int height;
     private final int mineCount;
-    final private Random random = new Random();
+    private final Random random = new Random();
 
     //constructor to initialise GB with data members
     public GameBoard(int width, int height, int mineCount) {

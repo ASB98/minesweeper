@@ -9,7 +9,7 @@ public class GameBoard {
     private final int width;
     private final int height;
     private final int mineCount;
-<span class="fc" id="L12">    final private Random random = new Random();</span>
+<span class="fc" id="L12">    private final Random random = new Random();</span>
 
     //constructor to initialise GB with data members
 <span class="fc" id="L15">    public GameBoard(int width, int height, int mineCount) {</span>
@@ -41,7 +41,7 @@ public class GameBoard {
 
             //check if the randomly chosen cell is not the first clicked cell or its neighbours
             //if not first cell or immediately neighbour to first or already mined, then place mine
-<span class="pc bpc" id="L44" title="2 of 4 branches missed.">            if (!isNeighbourOrSelf(firstX, firstY, x, y) &amp;&amp; !cells[y][x].isMine()) {</span>
+<span class="pc bpc" id="L44" title="1 of 4 branches missed.">            if (!isNeighbourOrSelf(firstX, firstY, x, y) &amp;&amp; !cells[y][x].isMine()) {</span>
 <span class="fc" id="L45">                cells[y][x].setMine(true); //set mine at valid cell</span>
 <span class="fc" id="L46">                placedMines++; //increment number of mines successfully placed</span>
             }
@@ -51,7 +51,7 @@ public class GameBoard {
 
     //determine if cell is first one clicked or if it is neighbour
     private boolean isNeighbourOrSelf(int firstX, int firstY, int x, int y) {
-<span class="pc bpc" id="L54" title="2 of 4 branches missed.">        return Math.abs(firstX - x) &lt;= 1 &amp;&amp; Math.abs(firstY - y) &lt;= 1; //return true if neighbour or self</span>
+<span class="pc bpc" id="L54" title="1 of 4 branches missed.">        return Math.abs(firstX - x) &lt;= 1 &amp;&amp; Math.abs(firstY - y) &lt;= 1; //return true if neighbour or self</span>
     }
 
     //updates each cell's neighbour mine count after mines have been placed
