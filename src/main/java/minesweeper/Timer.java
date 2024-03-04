@@ -14,6 +14,6 @@ public class Timer {
 
     public long getElapsedTimeSeconds() {
         long elapsedTimeMilliseconds = endTime - startTime;
-        return elapsedTimeMilliseconds / 1000; // Convert milliseconds to seconds
+        return elapsedTimeMilliseconds / 1000; //convert milliseconds to seconds
     }
 }
