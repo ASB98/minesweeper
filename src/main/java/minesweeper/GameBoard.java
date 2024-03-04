@@ -17,8 +17,6 @@ public class GameBoard {
         this.mineCount = mineCount;
         cells = new Cell[height][width]; //initialise cell array with given height and width
         initializeBoard();
-        //placeMines(); //removed so there is no instadeath
-        //calculateNeighbourMines();
     }
 
     //loop through board and place empty cells in each position
@@ -30,19 +28,6 @@ public class GameBoard {
         }
     }
 
-    //deprecated due to instadeath
-    private void placeMines() {
-        Random random = new Random();
-        int placedMines = 0;
-        while (placedMines < mineCount) {
-            int x = random.nextInt(width);
-            int y = random.nextInt(height);
-            if (!cells[y][x].isMine()) {
-                cells[y][x].setMine(true);
-                placedMines++;
-            }
-        }
-    }
 
     //method to place mines after first move to prevent instadeath
     public void placeMinesDynamically(int firstX, int firstY) {
@@ -88,10 +73,10 @@ public class GameBoard {
         //loop through neighbour mines, all 8 directions around mine
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
-                int number_x = x + i;
-                int number_y = y + j;
+                int numX = x + i;
+                int numY = y + j;
                 //check bounds and if the neighbouring cell is a mine
-                if (number_x >= 0 && number_x < width && number_y >= 0 && number_y < height && cells[number_y][number_x].isMine()) {
+                if (numX >= 0 && numX < width && numY >= 0 && numY < height && cells[numY][numX].isMine()) {
                     count++; //increment count if neighbouring cell is a mine
                 }
             }
@@ -217,6 +202,7 @@ public class GameBoard {
     //method for conditional formatting of neighbour mine numbers with ansi colour formatting
     //ENHANCED SWITCH, thanks for the recommendation intellij
     private String getColoredNumber(int neighbourMines) {
+        String defaultColour = "\u001B[0m";
         String colorCode = switch (neighbourMines) {
             //switch cases are number of neighbouring mines
             case 1 -> "\u001B[34m"; //blue
@@ -224,9 +210,9 @@ public class GameBoard {
             case 3 -> "\u001B[31m"; //red
             case 4 -> "\u001B[35m"; //purple
             case 5 -> "\u001B[33m"; //yellow
-            default -> "\u001B[0m"; //default color - white
+            default -> defaultColour; //default color - white
         };
-        return colorCode + (neighbourMines > 0 ? " " + neighbourMines + " " : "\u001B[47m" + "   " + "\u001B[0m") + "\u001B[0m"; //if no neighbour mines blank cell
+        return colorCode + (neighbourMines > 0 ? " " + neighbourMines + " " : "\u001B[47m" + "   " + defaultColour) + defaultColour; //if no neighbour mines blank cell
     }
 
     //method to get cells, only used for testing

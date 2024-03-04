@@ -2,10 +2,10 @@ import minesweeper.Cell;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CellTest {
+class CellTest {
 
     @Test
-    public void testCellProperties() {
+    void testCellProperties() {
         Cell cell = new Cell();
         assertFalse(cell.isMine());
         assertFalse(cell.isOpened());
@@ -14,7 +14,7 @@ public class CellTest {
     }
 
     @Test
-    public void testSettersAndGetters() {
+    void testSettersAndGetters() {
         Cell cell = new Cell();
         cell.setMine(true);
         cell.setOpened(true);

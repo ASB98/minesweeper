@@ -2,10 +2,10 @@ import minesweeper.GameBoard;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GameBoardTest {
+class GameBoardTest {
 
     @Test
-    public void testFlagCell() {
+    void testFlagCell() {
         //check cell can be flagged and un-flagged
         GameBoard gameBoard = new GameBoard(9, 9, 10);
         gameBoard.flagCell(0, 0);
@@ -15,7 +15,7 @@ public class GameBoardTest {
     }
 
     @Test
-    public void testCheckWin() {
+    void testCheckWin() {
         //manually setting up board with mines
         GameBoard gameBoard = new GameBoard(3, 3, 2);
         gameBoard.getCells()[0][0].setMine(false);
@@ -35,7 +35,7 @@ public class GameBoardTest {
     }
 
     @Test
-    public void testOpenCell() {
+    void testOpenCell() {
         GameBoard gameBoard = new GameBoard(9, 9, 10);
         //opening a cell without a mine
         assertFalse(gameBoard.openCell(0, 0));
@@ -48,7 +48,7 @@ public class GameBoardTest {
     }
 
     @Test
-    public void testLosingCondition() {
+    void testLosingCondition() {
         GameBoard gameBoard = new GameBoard(3, 3, 1);
         gameBoard.placeMinesDynamically(0, 0); //placing mines at random
 
