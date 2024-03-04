@@ -5,10 +5,11 @@ import java.util.Random;
 public class GameBoard {
     //2D array to store cells
     //Only dealing with arrays as everything is a fixed size
-    private Cell[][] cells;
-    private int width;
-    private int height;
-    private int mineCount;
+    final private Cell[][] cells;
+    final private int width;
+    final private int height;
+    final private int mineCount;
+    final private Random random = new Random();
 
     //constructor to initialise GB with data members
     public GameBoard(int width, int height, int mineCount) {
@@ -31,7 +32,7 @@ public class GameBoard {
 
     //method to place mines after first move to prevent instadeath
     public void placeMinesDynamically(int firstX, int firstY) {
-        Random random = new Random();
+
         int placedMines = 0;
 
         //mineCount set by user depending on difficulty, place randomly while count not met but only in valid cells

@@ -9,8 +9,8 @@ import java.util.InputMismatchException;
 
 public class MinesweeperCLI {
     private static GameBoard board;
-    private static boolean gameLost = false;
-    private static boolean isFirstMove = true;
+    //private static boolean gameLost = false;
+    //private static boolean isFirstMove = true;
     private static Timer timer;
 
     public static void main(String[] args) {
@@ -124,8 +124,9 @@ public class MinesweeperCLI {
     }
 
     private static void gameLoop(Scanner scanner) {
-        gameLost = false;
-        isFirstMove = true;
+        boolean gameLost = false;
+        boolean isFirstMove = true;
+
         while (!gameLost) {
             board.printBoard(false); //do not show mines unless game is lost
             System.out.println("Enter command (o x y to open a cell, f x y to flag a cell, q to quit): ");
