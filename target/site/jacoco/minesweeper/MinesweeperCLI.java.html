@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinesweeperCLI.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Minesweeper</a> &gt; <a href="index.source.html" class="el_package">minesweeper</a> &gt; <span class="el_source">MinesweeperCLI.java</span></div><h1>MinesweeperCLI.java</h1><pre class="source lang-java linenums">package minesweeper;
+
+import java.util.Scanner;
+import java.util.InputMismatchException;
+
+//Weird bugs if user chooses upper or lower mine density limits on some board sizes - need to be more restrictive on choice
+//I should probably limit the number of available flags to stop the possibility of cheating
+//Should also show incorrect flags as actual minesweeper does if you lose
+
+<span class="nc" id="L10">public class MinesweeperCLI {</span>
+    private static GameBoard board;
+<span class="nc" id="L12">    private static boolean gameLost = false;</span>
+<span class="nc" id="L13">    private static boolean isFirstMove = true;</span>
+    private static Timer timer;
+
+    public static void main(String[] args) {
+<span class="nc" id="L17">        Scanner scanner = new Scanner(System.in);</span>
+<span class="nc" id="L18">        System.out.println(&quot;\n&quot; +</span>
+                &quot;███╗░░░███╗██╗███╗░░██╗███████╗░██████╗░██╗░░░░░░░██╗███████╗███████╗██████╗░███████╗██████╗░\n&quot; +
+                &quot;████╗░████║██║████╗░██║██╔════╝██╔════╝░██║░░██╗░░██║██╔════╝██╔════╝██╔══██╗██╔════╝██╔══██╗\n&quot; +
+                &quot;██╔████╔██║██║██╔██╗██║█████╗░░╚█████╗░░╚██╗████╗██╔╝█████╗░░█████╗░░██████╔╝█████╗░░██████╔╝\n&quot; +
+                &quot;██║╚██╔╝██║██║██║╚████║██╔══╝░░░╚═══██╗░░████╔═████║░██╔══╝░░██╔══╝░░██╔═══╝░██╔══╝░░██╔══██╗\n&quot; +
+                &quot;██║░╚═╝░██║██║██║░╚███║███████╗██████╔╝░░╚██╔╝░╚██╔╝░███████╗███████╗██║░░░░░███████╗██║░░██║\n&quot; +
+                &quot;╚═╝░░░░░╚═╝╚═╝╚═╝░░╚══╝╚══════╝╚═════╝░░░░╚═╝░░░╚═╝░░╚══════╝╚══════╝╚═╝░░░░░╚══════╝╚═╝░░╚═╝&quot;);
+<span class="nc" id="L25">        startNewGame(scanner);</span>
+<span class="nc" id="L26">    }</span>
+
+    private static void startNewGame(Scanner scanner) {
+<span class="nc" id="L29">        System.out.println(&quot;\nSelect difficulty (1 - Easy, 2 - Medium, 3 - Hard, 4 - Custom):&quot;);</span>
+
+        try {
+<span class="nc" id="L32">            int difficulty = scanner.nextInt();</span>
+<span class="nc bnc" id="L33" title="All 5 branches missed.">            switch (difficulty) {</span>
+                //these are the official difficulty levels apparently
+                case 1: //easy
+<span class="nc" id="L36">                    board = new GameBoard(9, 9, 10);</span>
+<span class="nc" id="L37">                    break;</span>
+                case 2: //medium
+<span class="nc" id="L39">                    board = new GameBoard(16, 16, 40);</span>
+<span class="nc" id="L40">                    break;</span>
+                case 3: //hard
+<span class="nc" id="L42">                    board = new GameBoard(30, 16, 99);</span>
+<span class="nc" id="L43">                    break;</span>
+                case 4: //custom
+<span class="nc" id="L45">                    System.out.println(&quot;Enter custom width and height (min 5x5, max 50x50):&quot;);</span>
+<span class="nc" id="L46">                    int width = validIntInput(scanner, 5, 50);</span>
+<span class="nc" id="L47">                    int height = validIntInput(scanner, 5, 50);</span>
+
+                    //calculate and display valid density range
+<span class="nc" id="L50">                    float minDensity = 100.0f / (width * height); //minimum density for at least one mine</span>
+<span class="nc" id="L51">                    float maxDensity = 100.0f * (width * height - 1) / (width * height); //maximum density for at least one non-mine</span>
+<span class="nc" id="L52">                    System.out.printf(&quot;Enter mine density percentage (valid range: %.2f%% to %.2f%%):%n&quot;, minDensity, maxDensity);</span>
+
+<span class="nc" id="L54">                    float mineDensity = validFloatInput(scanner, minDensity, maxDensity);</span>
+<span class="nc" id="L55">                    int mineCount = (int) ((width * height) * (mineDensity / 100));</span>
+<span class="nc" id="L56">                    board = new GameBoard(width, height, mineCount);</span>
+<span class="nc" id="L57">                    break;</span>
+                default:
+                    //invalid input handling. Prompts for difficulty selection again.
+<span class="nc" id="L60">                    System.out.println(&quot;Invalid difficulty. Please enter a number between 1 and 4.&quot;);</span>
+<span class="nc" id="L61">                    scanner.nextLine();</span>
+<span class="nc" id="L62">                    startNewGame(scanner); //call startNewGame to prompt for difficulty again.</span>
+<span class="nc" id="L63">                    return;</span>
+            }
+            //should catch type mismatch
+<span class="nc" id="L66">        } catch (InputMismatchException e) {</span>
+<span class="nc" id="L67">            System.out.println(&quot;Invalid input. Please enter numeric values.&quot;);</span>
+<span class="nc" id="L68">            scanner.nextLine();</span>
+<span class="nc" id="L69">            startNewGame(scanner);</span>
+<span class="nc" id="L70">            return;</span>
+<span class="nc" id="L71">        }</span>
+<span class="nc" id="L72">        scanner.nextLine();</span>
+<span class="nc" id="L73">        timer = new Timer();//initialise timer</span>
+<span class="nc" id="L74">        timer.start();//start timer</span>
+<span class="nc" id="L75">        gameLoop(scanner);</span>
+<span class="nc" id="L76">    }</span>
+
+    //integer validation within specified range
+    private static int validIntInput(Scanner scanner, int min, int max) {
+        int input;
+        do {
+<span class="nc bnc" id="L82" title="All 2 branches missed.">            while (!scanner.hasNextInt()) {</span>
+<span class="nc" id="L83">                System.out.println(&quot;Invalid input. Please enter an integer value.&quot;);</span>
+<span class="nc" id="L84">                scanner.next(); //clear incorrect input</span>
+            }
+<span class="nc" id="L86">            input = scanner.nextInt();</span>
+<span class="nc bnc" id="L87" title="All 4 branches missed.">            if (input &lt; min || input &gt; max) {</span>
+<span class="nc" id="L88">                System.out.printf(&quot;Please enter a value between %d and %d.%n&quot;, min, max);</span>
+            }
+<span class="nc bnc" id="L90" title="All 4 branches missed.">        } while (input &lt; min || input &gt; max);</span>
+<span class="nc" id="L91">        return input;</span>
+    }
+
+    //float input validation within specific range
+    private static float validFloatInput(Scanner scanner, float min, float max) {
+        float input;
+        do {
+<span class="nc bnc" id="L98" title="All 2 branches missed.">            while (!scanner.hasNextFloat()) {</span>
+<span class="nc" id="L99">                System.out.println(&quot;Invalid input. Please enter a numeric value.&quot;);</span>
+<span class="nc" id="L100">                scanner.next(); //clear incorrect input</span>
+            }
+<span class="nc" id="L102">            input = scanner.nextFloat();</span>
+<span class="nc bnc" id="L103" title="All 4 branches missed.">            if (input &lt; min || input &gt; max) {</span>
+<span class="nc" id="L104">                System.out.printf(&quot;Please enter a value between %.2f and %.2f.%n&quot;, min, max);</span>
+            }
+<span class="nc bnc" id="L106" title="All 4 branches missed.">        } while (input &lt; min || input &gt; max);</span>
+<span class="nc" id="L107">        return input;</span>
+    }
+
+    //handler for win condition
+    private static void checkAndHandleWin(Scanner scanner) {
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (board.checkWin()) {</span>
+<span class="nc" id="L113">            timer.stop(); //stop timer</span>
+<span class="nc" id="L114">            board.printBoard(true); //show the entire board</span>
+<span class="nc" id="L115">            long elapsedTimeSeconds = timer.getElapsedTimeSeconds();</span>
+<span class="nc" id="L116">            System.out.println(&quot;Congratulations, you've won!&quot; + &quot;\nTime taken: &quot; + elapsedTimeSeconds + &quot; seconds&quot;  + &quot;\nPlay again? (y/n): &quot;);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">            if (scanner.nextLine().trim().equalsIgnoreCase(&quot;y&quot;)) {</span>
+<span class="nc" id="L118">                startNewGame(scanner);</span>
+            } else {
+<span class="nc" id="L120">                System.out.println(&quot;Thank you for playing!&quot;);</span>
+<span class="nc" id="L121">                System.exit(0);</span>
+            }
+        }
+<span class="nc" id="L124">    }</span>
+
+    private static void gameLoop(Scanner scanner) {
+<span class="nc" id="L127">        gameLost = false;</span>
+<span class="nc" id="L128">        isFirstMove = true;</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        while (!gameLost) {</span>
+<span class="nc" id="L130">            board.printBoard(false); //do not show mines unless game is lost</span>
+<span class="nc" id="L131">            System.out.println(&quot;Enter command (o x y to open a cell, f x y to flag a cell, q to quit): &quot;);</span>
+<span class="nc" id="L132">            String input = scanner.nextLine();</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">            if (&quot;q&quot;.equals(input)) {</span>
+<span class="nc" id="L134">                break;</span>
+            }
+
+            //split into array of substrings on &quot; &quot; character
+<span class="nc" id="L138">            String[] parts = input.split(&quot; &quot;);</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">            if (parts.length == 3) {</span>
+<span class="nc" id="L140">                int x = Integer.parseInt(parts[1]) - 1; //adjust for 1-based indexing</span>
+<span class="nc" id="L141">                int y = Integer.parseInt(parts[2]) - 1;</span>
+<span class="nc bnc" id="L142" title="All 3 branches missed.">                switch (parts[0]) {</span>
+                    case &quot;o&quot;:
+<span class="nc bnc" id="L144" title="All 2 branches missed.">                        if (isFirstMove) {</span>
+                            //only place mines after first move
+<span class="nc" id="L146">                            board.placeMinesDynamically(x, y);</span>
+<span class="nc" id="L147">                            isFirstMove = false;</span>
+                        }
+
+                        //if true then mine has been opened - game over
+<span class="nc bnc" id="L151" title="All 2 branches missed.">                        if (board.openCell(x, y)) {</span>
+<span class="nc" id="L152">                            timer.stop();</span>
+<span class="nc" id="L153">                            long elapsedTimeSeconds = timer.getElapsedTimeSeconds();</span>
+<span class="nc" id="L154">                            gameLost = true;</span>
+<span class="nc" id="L155">                            board.printBoard(true); //show mines</span>
+<span class="nc" id="L156">                            System.out.println(&quot;Game over! You hit a mine after &quot; + elapsedTimeSeconds + &quot; seconds. Try again? (y/n): &quot;);</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">                            if (scanner.nextLine().trim().equalsIgnoreCase(&quot;y&quot;)) {</span>
+<span class="nc" id="L158">                                startNewGame(scanner);</span>
+                            } else {
+<span class="nc" id="L160">                                System.exit(0);</span>
+                            }
+<span class="nc" id="L162">                        } else {</span>
+<span class="nc" id="L163">                            checkAndHandleWin(scanner);</span>
+                        }
+<span class="nc" id="L165">                        break;</span>
+                    case &quot;f&quot;:
+<span class="nc" id="L167">                        board.flagCell(x, y);</span>
+<span class="nc" id="L168">                        checkAndHandleWin(scanner);</span>
+<span class="nc" id="L169">                        break;</span>
+                    default:
+<span class="nc" id="L171">                        System.out.println(&quot;Invalid command.&quot;);</span>
+                        break;
+                }
+<span class="nc" id="L174">            } else {</span>
+<span class="nc" id="L175">                System.out.println(&quot;Invalid command.&quot;);</span>
+            }
+<span class="nc" id="L177">        }</span>
+<span class="nc" id="L178">    }</span>
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
